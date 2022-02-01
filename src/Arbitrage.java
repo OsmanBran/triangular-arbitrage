@@ -21,11 +21,13 @@ public class Arbitrage {
 
         BidAsk crossRate = getCrossRate(xBidAsk, yBidAsk);
 
-        int result = compareCrossRate(crossRate, xyBidAsk);
-        if (result == 1){
+        // Compare cross rate with current XY rates
+        // Current ask is higher than cross bid -> buy X with AUD
+        if (xyBidAsk.ask.price > crossRate.bid.price){
             System.out.println(getProfitX(xBidAsk.ask, xyBidAsk.ask, yBidAsk.bid));
         }
-        else if (result == -1){
+        // Current bid is higher than cross ask -> buy Y with AUD
+        else if (xyBidAsk.bid.price > crossRate.ask.price){
             System.out.println(getProfitY(yBidAsk.ask, xyBidAsk.bid, xBidAsk.bid));
         }
         else {
@@ -48,21 +50,6 @@ public class Arbitrage {
         return new BidAsk(bid, ask);
     }
 
-    private static int compareCrossRate (BidAsk cross, BidAsk current) {
-        // Current ask is higher than cross bid -> buy X with AUD
-        if (current.ask.price > cross.bid.price){
-            return 1;
-        }
-        // Current bid is higher than cross ask -> buy Y with AUD
-        else if (current.bid.price > cross.ask.price){
-            return -1;
-        }
-        // No arbitrage available
-        else {
-            return 0;
-        }
-    }
-
     /**
      * Returns the possible profit by purchasing X and converting via the XY market
      * @param XAsk
@@ -71,6 +58,7 @@ public class Arbitrage {
      * @return
      */
     private static float getProfitX(Order XAsk, Order XYAsk, Order YBid) {
+        float volume = min(min(XAsk.volume, XYAsk.volume),  YBid.volume);
         float capital = 10000; //TODO: replace with volume
 
         float x = capital / XAsk.price;
