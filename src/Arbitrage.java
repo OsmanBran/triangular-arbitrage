@@ -3,7 +3,7 @@ import static java.lang.Math.min;
 public class Arbitrage {
     Market marketX; // BTC-AUD
     Market marketY; // ETH-AUD
-    Market marketXY; // ETH-BTC
+    Market marketXY; // ETH-BTC (Y should be the base and X the quote)
 
     public Arbitrage (String marketX, String marketY, String marketXY){
         this.marketX = new Market(marketX);
@@ -51,15 +51,14 @@ public class Arbitrage {
     }
 
     /**
-     * Returns the possible profit by purchasing X and converting via the XY market
+     * Returns the possible profit by purchasing X, converting to Y on XY market, and selling Y back to AUD
      * @param XAsk
      * @param XYAsk
      * @param YBid
      * @return
      */
     private static float getProfitX(Order XAsk, Order XYAsk, Order YBid) {
-        float volume = min(min(XAsk.volume, XYAsk.volume),  YBid.volume);
-        float capital = 10000; //TODO: replace with volume
+        float capital = calculateCapitalX(XAsk, XYAsk, YBid);
 
         float x = capital / XAsk.price;
         float y = x / XYAsk.price;
@@ -68,18 +67,46 @@ public class Arbitrage {
     }
 
     /**
-     * Returns the possible profit by purchasing Y and converting via the XY market
+     * Returns the possible profit by purchasing Y, converting to X on XY market, and selling X back to AUD
      * @param YAsk
      * @param XYBid
      * @param XBid
      * @return
      */
     private static float getProfitY(Order YAsk, Order XYBid, Order XBid) {
-        float capital = 10000;
+        float capital = calculateCapitalY(YAsk, XYBid, XBid);
 
         float y = capital / YAsk.price;
         float x = y * XYBid.price;
         float aud = x * XBid.price;
         return aud - capital;
+    }
+
+    /**
+     * Returns the amount of AUD that can fill the maximum amount of volume for the X-buying strategy
+     * @param XAsk
+     * @param XYAsk
+     * @param YBid
+     * @return
+     */
+    private static float calculateCapitalX(Order XAsk, Order XYAsk, Order YBid){
+        // Find max amount of Y sold
+        float maxYSold = min(YBid.volume, XYAsk.volume);
+
+        // Find max amount of X bought & sold
+        float maxXSold = min(maxYSold * XYAsk.price, XAsk.volume);
+
+        return maxXSold * XAsk.price;
+    }
+
+
+    private static float calculateCapitalY(Order YAsk, Order XYBid, Order XBid){
+        // Find max amount of X Sold
+        float maxXSold = min(XBid.volume, XYBid.volume * XYBid.price);
+
+        // Find max amount of Y bought & sold
+        float maxYSold = min(maxXSold / XYBid.price, YAsk.volume);
+
+        return maxYSold * YAsk.price;
     }
 }
