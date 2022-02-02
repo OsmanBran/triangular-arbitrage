@@ -1,14 +1,14 @@
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Market {
-    String orderbookURL;
+    private String orderbookURL;
 
     public Market (String ticker) {
         orderbookURL = "https://api.btcmarkets.net/v3/markets/" + ticker + "/orderbook";
@@ -28,8 +28,8 @@ public class Market {
             // execute http request
             httpResponse = httpClient.execute(httpGet);
 
-            if (httpResponse.getCode() != 200) {
-                throw new RuntimeException(httpResponse.getReasonPhrase());
+            if (httpResponse.getStatusLine().getStatusCode() != 200) {
+                throw new RuntimeException(httpResponse.getStatusLine().getReasonPhrase());
             }
             // return JSON results as String
             HttpEntity entity = httpResponse.getEntity();
