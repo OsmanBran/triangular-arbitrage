@@ -71,8 +71,8 @@ public class Market {
      * @return
      */
     private Order parseAsOrder (JSONArray orderArr) {
-        Float price = orderArr.getFloat(0);
-        Float volume = orderArr.getFloat(1);
+        double price = orderArr.getDouble(0);
+        double volume = orderArr.getDouble(1);
 
         return new Order(price, volume);
     }

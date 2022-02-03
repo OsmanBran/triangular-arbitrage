@@ -1,8 +1,8 @@
 public class Order {
-    float price;
-    float volume;
+    double price;
+    double volume;
 
-    public Order (float price, float volume) {
+    public Order (double price, double volume) {
         this.price = price;
         this.volume = volume;
     }
