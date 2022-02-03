@@ -47,7 +47,7 @@ public class ArbitrageTest {
     @DisplayName("returns profit when market spread is higher than cross spread")
     void profitWhenMarketHigherThanCross() throws Exception {
         marketXY.setBid(0.072, volumeY).setAsk(0.073, volumeY);
-        assertEquals(297.6984, arbitrage.checkArbitrage(), 0.01);
+        assertEquals(297.698, arbitrage.checkArbitrage(), 0.01);
     }
 
     @Test
