@@ -9,9 +9,11 @@ import org.json.JSONObject;
 
 public class Market {
     private String orderbookURL;
+    private String ticker;
 
     public Market (String ticker) {
         orderbookURL = "https://api.btcmarkets.net/v3/markets/" + ticker + "/orderbook";
+        this.ticker = ticker;
     }
 
     public BidAsk getBidAsk () throws Exception {
@@ -75,5 +77,9 @@ public class Market {
         double volume = orderArr.getDouble(1);
 
         return new Order(price, volume);
+    }
+
+    public String getTicker(){
+        return ticker;
     }
 }

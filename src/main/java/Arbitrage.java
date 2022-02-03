@@ -5,6 +5,10 @@ public class Arbitrage {
     Market marketY; // ETH-AUD
     Market marketXY; // ETH-BTC (Y should be the base and X the quote)
 
+    BidAsk xBidAsk;
+    BidAsk yBidAsk;
+    BidAsk xyBidAsk;
+
     public Arbitrage (String marketX, String marketY, String marketXY){
         this.marketX = new Market(marketX);
         this.marketY = new Market(marketY);
@@ -12,12 +16,25 @@ public class Arbitrage {
     }
 
     /**
+     * Gets the top bid and asks for each market in the form of JTable data
+     * @return
+     */
+    public Object[][] getMarketData(){
+        Object[][] data = {
+                {marketX.getTicker(), xBidAsk.bid.price, xBidAsk.bid.volume, xBidAsk.ask.price, xBidAsk.ask.volume},
+                {marketY.getTicker(), yBidAsk.bid.price, yBidAsk.bid.volume, yBidAsk.ask.price, yBidAsk.ask.volume},
+                {marketXY.getTicker(), xyBidAsk.bid.price, xyBidAsk.bid.volume, xyBidAsk.ask.price, xyBidAsk.ask.volume}
+        };
+        return data;
+    }
+
+    /**
      * Calls the latest asks and bids from each market and checks if arbitrage is available
      */
     public double checkArbitrage () throws Exception {
-        BidAsk xBidAsk = marketX.getBidAsk();
-        BidAsk yBidAsk = marketY.getBidAsk();
-        BidAsk xyBidAsk = marketXY.getBidAsk();
+        xBidAsk = marketX.getBidAsk();
+        yBidAsk = marketY.getBidAsk();
+        xyBidAsk = marketXY.getBidAsk();
 
         BidAsk crossRate = getCrossRate(xBidAsk, yBidAsk);
 
