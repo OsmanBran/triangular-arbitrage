@@ -22,12 +22,12 @@ public class Arbitrage {
         BidAsk crossRate = getCrossRate(xBidAsk, yBidAsk);
 
         // Compare cross rate with current XY rates
-        // Current ask is higher than cross bid -> buy X with AUD
+        // If market spread lower than cross rate spread, X is overvalued, buy X
         double profit = 0;
-        if (xyBidAsk.ask.price > crossRate.bid.price){
+        if (xyBidAsk.ask.price < crossRate.bid.price){
             profit = getProfitX(xBidAsk.ask, xyBidAsk.ask, yBidAsk.bid);
         }
-        // Current bid is higher than cross ask -> buy Y with AUD
+        // If market spread higher than cross rate spread, Y is overvalued, buy Y
         else if (xyBidAsk.bid.price > crossRate.ask.price){
             profit = getProfitY(yBidAsk.ask, xyBidAsk.bid, xBidAsk.bid);
         }

@@ -40,20 +40,20 @@ public class ArbitrageTest {
     @DisplayName("returns profit when market spread is lower than cross spread")
     void profitWhenMarketLowerThanCross() throws Exception {
         marketXY.setBid(0.067, volumeY).setAsk(0.068, volumeY);
-        assertEquals(316.339, arbitrage.checkArbitrage());
+        assertEquals(316.339, arbitrage.checkArbitrage(), 0.01);
     }
 
     @Test
     @DisplayName("returns profit when market spread is higher than cross spread")
     void profitWhenMarketHigherThanCross() throws Exception {
         marketXY.setBid(0.072, volumeY).setAsk(0.073, volumeY);
-        assertEquals(297.6984, arbitrage.checkArbitrage());
+        assertEquals(297.6984, arbitrage.checkArbitrage(), 0.01);
     }
 
     @Test
     @DisplayName("returns no profit when market and cross spread overlap")
     void noProfitWhenSpreadsOverlap() throws Exception {
         marketXY.setBid(0.06, volumeY).setAsk(0.07, volumeY);
-        assertEquals(297.6984, arbitrage.checkArbitrage());
+        assertEquals(0, arbitrage.checkArbitrage());
     }
 }
