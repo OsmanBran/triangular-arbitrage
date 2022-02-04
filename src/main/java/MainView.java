@@ -45,11 +45,19 @@ public class MainView {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                strategyTable.setData(arb.checkArbitrage());
+                Strategy result = arb.checkArbitrage();
+                if (result.isProfitable()){
+                    strategyTable.clearFailMessage();
+                    strategyTable.setData(result);
+                }
+                else {
+                    strategyTable.displayFailure(result.getFailMessage());
+                }
+
                 marketTable.setData(arb.getMarketData());
             }
             catch (Exception ex) {
-                JOptionPane.showMessageDialog(frame, "Something went wrong",
+                JOptionPane.showMessageDialog(frame, ex.getMessage(),
                         "Message", JOptionPane.ERROR_MESSAGE);
             }
         }

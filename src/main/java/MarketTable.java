@@ -14,6 +14,7 @@ public class MarketTable extends JPanel {
 
     public MarketTable(){
         table = new JTable(data, columnNames);
+        table.setRowHeight(30);
 
         this.setLayout(new BorderLayout());
         this.add(table.getTableHeader(), BorderLayout.PAGE_START);

@@ -50,6 +50,10 @@ public class Arbitrage {
         else if (xyBidAsk.bid.price > crossRate.ask.price){
             strategy.update(false, yBidAsk.ask, xyBidAsk.bid, xBidAsk.bid);
         }
+        else {
+            strategy.setProfitability(false);
+            strategy.setFailMessage(crossRate);
+        }
         return strategy;
     }
 

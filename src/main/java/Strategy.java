@@ -5,6 +5,8 @@ public class Strategy {
     private String[] labels = {"Initial Capital","","","","Profit"};
     private String X;
     private String Y;
+    private boolean profitable;
+    private String failMessage;
 
     public Strategy(String X, String Y){
         this.X = X;
@@ -28,6 +30,7 @@ public class Strategy {
     }
 
     public void update(boolean xOvervalued, Order trade1, Order trade2, Order trade3){
+        profitable = true;
         values = new String[]{"AUD", "", "", "AUD", "AUD"};
         labels = new String[]{"Initial Capital", "", "", "", "Profit"};
 
@@ -116,5 +119,21 @@ public class Strategy {
 
     public String[] getValues() {
         return values;
+    }
+
+    public void setProfitability(boolean profitability){
+        profitable = profitability;
+    }
+
+    public boolean isProfitable(){
+        return profitable;
+    }
+
+    public void setFailMessage(BidAsk crossRate){
+        failMessage = "No arbitrage available \n" + "cross rate spread is: " + String.format("%,.5f", crossRate.bid.price) + " - " + String.format("%,.5f", crossRate.ask.price);
+    }
+
+    public String getFailMessage(){
+        return failMessage;
     }
 }

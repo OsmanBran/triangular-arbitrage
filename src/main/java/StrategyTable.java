@@ -13,12 +13,18 @@ public class StrategyTable extends JPanel {
             {"N/A", "-"},
     };
 
+    private JLabel info;
+
     public StrategyTable(){
         table = new JTable(data, columnNames);
+        table.setRowHeight(30);
 
         this.setLayout(new BorderLayout());
         this.add(table.getTableHeader(), BorderLayout.PAGE_START);
         this.add(table, BorderLayout.CENTER);
+
+        info = new JLabel(" ");
+        this.add(info, BorderLayout.PAGE_END);
     }
 
     public void setData(Strategy strategyData){
@@ -31,5 +37,13 @@ public class StrategyTable extends JPanel {
         }
 
         table.setModel(new DefaultTableModel(tableData, columnNames));
+    }
+
+    public void displayFailure(String message){
+        info.setText(message);
+    }
+
+    public void clearFailMessage(){
+        info.setText("");
     }
 }
