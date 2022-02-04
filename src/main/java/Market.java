@@ -10,10 +10,12 @@ import org.json.JSONObject;
 public class Market {
     private String orderbookURL;
     private String ticker;
+    private String base;
 
     public Market (String ticker) {
         orderbookURL = "https://api.btcmarkets.net/v3/markets/" + ticker + "/orderbook";
         this.ticker = ticker;
+        this.base = ticker.substring(0, 3);
     }
 
     public BidAsk getBidAsk () throws Exception {
@@ -64,7 +66,7 @@ public class Market {
         Order topAsk = parseAsOrder(asks.getJSONArray(0));
         Order topBid = parseAsOrder(bids.getJSONArray(0));
 
-        return new BidAsk(topAsk, topBid);
+        return new BidAsk(topBid, topAsk);
     }
 
     /**
@@ -82,4 +84,6 @@ public class Market {
     public String getTicker(){
         return ticker;
     }
+
+    public String getBase() { return base; }
 }

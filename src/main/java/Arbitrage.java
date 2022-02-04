@@ -9,10 +9,13 @@ public class Arbitrage {
     BidAsk yBidAsk;
     BidAsk xyBidAsk;
 
+    Strategy strategy;
+
     public Arbitrage (String marketX, String marketY, String marketXY){
         this.marketX = new Market(marketX);
         this.marketY = new Market(marketY);
         this.marketXY = new Market(marketXY);
+        this.strategy = new Strategy(this.marketX.getBase(), this.marketY.getBase());
     }
 
     /**
@@ -31,7 +34,7 @@ public class Arbitrage {
     /**
      * Calls the latest asks and bids from each market and checks if arbitrage is available
      */
-    public double checkArbitrage () throws Exception {
+    public Strategy checkArbitrage () throws Exception {
         xBidAsk = marketX.getBidAsk();
         yBidAsk = marketY.getBidAsk();
         xyBidAsk = marketXY.getBidAsk();
@@ -40,16 +43,14 @@ public class Arbitrage {
 
         // Compare cross rate with current XY rates
         // If market spread lower than cross rate spread, X is overvalued, buy X
-        double profit = 0;
         if (xyBidAsk.ask.price < crossRate.bid.price){
-            profit = getProfitX(xBidAsk.ask, xyBidAsk.ask, yBidAsk.bid);
+            strategy.update(true, xBidAsk.ask, xyBidAsk.ask, yBidAsk.bid);
         }
         // If market spread higher than cross rate spread, Y is overvalued, buy Y
         else if (xyBidAsk.bid.price > crossRate.ask.price){
-            profit = getProfitY(yBidAsk.ask, xyBidAsk.bid, xBidAsk.bid);
+            strategy.update(false, yBidAsk.ask, xyBidAsk.bid, xBidAsk.bid);
         }
-        System.out.println(profit);
-        return profit;
+        return strategy;
     }
 
     /**
@@ -65,65 +66,5 @@ public class Arbitrage {
         Order ask = new Order(askPrice, 0);
 
         return new BidAsk(bid, ask);
-    }
-
-    /**
-     * Returns the possible profit by purchasing X, converting to Y on XY market, and selling Y back to AUD
-     * @param XAsk
-     * @param XYAsk
-     * @param YBid
-     * @return
-     */
-    private static double getProfitX(Order XAsk, Order XYAsk, Order YBid) {
-        double capital = calculateCapitalX(XAsk, XYAsk, YBid);
-
-        double x = capital / XAsk.price;
-        double y = x / XYAsk.price;
-        double aud = y * YBid.price;
-        return aud - capital;
-    }
-
-    /**
-     * Returns the possible profit by purchasing Y, converting to X on XY market, and selling X back to AUD
-     * @param YAsk
-     * @param XYBid
-     * @param XBid
-     * @return
-     */
-    private static double getProfitY(Order YAsk, Order XYBid, Order XBid) {
-        double capital = calculateCapitalY(YAsk, XYBid, XBid);
-
-        double y = capital / YAsk.price;
-        double x = y * XYBid.price;
-        double aud = x * XBid.price;
-        return aud - capital;
-    }
-
-    /**
-     * Returns the amount of AUD that can fill the maximum amount of volume for the X-buying strategy
-     * @param XAsk
-     * @param XYAsk
-     * @param YBid
-     * @return
-     */
-    private static double calculateCapitalX(Order XAsk, Order XYAsk, Order YBid){
-        // Find max amount of Y sold
-        double maxYSold = min(YBid.volume, XYAsk.volume);
-
-        // Find max amount of X bought & sold
-        double maxXSold = min(maxYSold * XYAsk.price, XAsk.volume);
-
-        return maxXSold * XAsk.price;
-    }
-
-
-    private static double calculateCapitalY(Order YAsk, Order XYBid, Order XBid){
-        // Find max amount of X Sold
-        double maxXSold = min(XBid.volume, XYBid.volume * XYBid.price);
-
-        // Find max amount of Y bought & sold
-        double maxYSold = min(maxXSold / XYBid.price, YAsk.volume);
-
-        return maxYSold * YAsk.price;
     }
 }

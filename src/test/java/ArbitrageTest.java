@@ -30,7 +30,7 @@ public class ArbitrageTest {
         marketX.setBid(54537.40, volumeX).setAsk(54629.76, volumeX);
         marketY.setBid(3820.27, volumeY).setAsk(3827.46, volumeY);
     }
-
+    /*
     public ArbitrageTest() {
         initialiseMockArbitrage();
         setCrossRate();
@@ -55,5 +55,5 @@ public class ArbitrageTest {
     void noProfitWhenSpreadsOverlap() throws Exception {
         marketXY.setBid(0.06, volumeY).setAsk(0.07, volumeY);
         assertEquals(0, arbitrage.checkArbitrage());
-    }
+    }*/
 }

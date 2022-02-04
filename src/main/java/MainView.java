@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 public class MainView {
     private JFrame frame;
     private MarketTable marketTable;
+    private StrategyTable strategyTable;
     Arbitrage arb;
 
     private void initialiseModel(){
@@ -30,6 +31,8 @@ public class MainView {
         frame.add(marketTable, BorderLayout.CENTER);
 
         // Lower pane shows actions
+        strategyTable = new StrategyTable();
+        frame.add(strategyTable, BorderLayout.PAGE_END);
 
         // Display window
         frame.setLocationRelativeTo(null);
@@ -42,7 +45,7 @@ public class MainView {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                arb.checkArbitrage();
+                strategyTable.setData(arb.checkArbitrage());
                 marketTable.setData(arb.getMarketData());
             }
             catch (Exception ex) {
@@ -50,5 +53,9 @@ public class MainView {
                         "Message", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new MainView();
     }
 }
