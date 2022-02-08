@@ -8,11 +8,6 @@ public class Strategy {
     private boolean profitable;
     private String failMessage;
 
-    public Strategy(String X, String Y){
-        this.X = X;
-        this.Y = Y;
-    }
-
     private void addLabelX(){
         values[1] = X;
         values[2] = Y;
@@ -111,6 +106,11 @@ public class Strategy {
 
     private void appendTradePrice(int strIndex, double price, String currency){
         labels[strIndex] = labels[strIndex] + " @" + String.format("%,.2f", price) + currency;
+    }
+
+    public void setMarketStrings(String X, String Y){
+        this.X = X;
+        this.Y = Y;
     }
 
     public String[] getLabels() {

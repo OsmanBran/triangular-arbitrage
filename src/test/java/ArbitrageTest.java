@@ -17,7 +17,7 @@ public class ArbitrageTest {
         marketY = new MockMarket("ETH-AUD");
         marketXY = new MockMarket("ETH-BTC");
 
-        arbitrage = new Arbitrage("BTC-AUD", "ETH-AUD", "ETH-BTC");
+        arbitrage = new Arbitrage();
         arbitrage.marketX = marketX;
         arbitrage.marketY = marketY;
         arbitrage.marketXY = marketXY;

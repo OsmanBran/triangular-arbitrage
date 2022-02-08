@@ -9,13 +9,17 @@ public class Arbitrage {
     BidAsk yBidAsk;
     BidAsk xyBidAsk;
 
-    Strategy strategy;
+    Strategy strategy = new Strategy();
 
-    public Arbitrage (String marketX, String marketY, String marketXY){
-        this.marketX = new Market(marketX);
-        this.marketY = new Market(marketY);
-        this.marketXY = new Market(marketXY);
-        this.strategy = new Strategy(this.marketX.getBase(), this.marketY.getBase());
+    public void setMarkets(String selectedMarket){
+        // string in format X-Y
+        String[] markets = selectedMarket.split("-");
+        String marketX = markets[0];
+        String marketY = markets[1];
+        this.marketX = new Market(marketX + "-" + "AUD");
+        this.marketY = new Market(marketY + "-" + "AUD");
+        this.marketXY = new Market(marketY + "-" + marketX);
+        strategy.setMarketStrings(marketX, marketY);
     }
 
     /**
