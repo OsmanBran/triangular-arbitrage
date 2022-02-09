@@ -21,7 +21,7 @@ public class FailMessage extends JPanel {
     }
 
     public void setMessage(BidAsk cross, BidAsk market){
-        marketSpread.setText("Market Spread: " + MainView.spreadString(market));
-        crossSpread.setText("Cross Spread:  " + MainView.spreadString(cross));
+        marketSpread.setText("Market Spread: " + Utils.spreadString(market));
+        crossSpread.setText("Cross Spread:  " + Utils.spreadString(cross));
     }
 }

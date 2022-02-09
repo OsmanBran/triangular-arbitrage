@@ -15,6 +15,7 @@ public class MainView {
 
     private Arbitrage arb = new Arbitrage();
     private boolean isPolling = false;
+    private Poll poll = new Poll();
 
     public MainView() {
         // Initialise frame
@@ -135,7 +136,7 @@ public class MainView {
         }
 
         public void displayPollResults(Strategy result) {
-            pollDetails.updatePoll(arb.getCrossSpread(), arb.getMarketSpread(), result);
+            pollDetails.updateDetails(arb.getCrossSpread(), arb.getMarketSpread(), result, poll);
             cardModel.show(this,"poll");
         }
     }
@@ -163,13 +164,9 @@ public class MainView {
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                // initialise tracking variables
-
-                // update GUI to only show stop poll
+                settingsPanel.togglePoll();
 
                 // begin polling every 10 seconds until poll stopped (use new thread?)
-                isPolling = true;
-                settingsPanel.togglePoll();
                 Thread pollThread = new Thread(new pollArbitrage());
                 pollThread.start();
             }
@@ -193,11 +190,16 @@ public class MainView {
 
     public class pollArbitrage implements Runnable {
         public void run(){
+            isPolling = true;
+            poll.clearPoll();
+
             while(isPolling){
                 Strategy result = null;
                 try {
                     arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
                     result = arb.checkArbitrage();
+                    poll.updatePoll(result);
+
                     resultsPanel.displayPollResults(result);
 
                     marketTable.setData(arb.getMarketData());
@@ -209,10 +211,6 @@ public class MainView {
                 }
             }
         }
-    }
-
-    public static String spreadString(BidAsk spread){
-        return String.format("%,.5f", spread.bid.price) + " - " + String.format("%,.5f", spread.ask.price);
     }
 
     public static void main(String[] args) throws Exception {

@@ -5,7 +5,8 @@ public class Strategy {
     private String[] labels = {"Initial Capital","","","","Profit"};
     private String X;
     private String Y;
-    private boolean profitable;
+    private boolean profitable = false;
+    private Double profit;
 
     private void addLabelX(){
         values[1] = X;
@@ -40,42 +41,42 @@ public class Strategy {
 
     private void recordProfitX(Order XAsk, Order XYAsk, Order YBid) {
         double capital = calculateCapitalX(XAsk, XYAsk, YBid);
-        values[0] = valueString(capital, values[0]);
+        values[0] = Utils.valueString(capital, values[0]);
 
         double x = capital / XAsk.price;
-        values[1] = valueString(x, values[1]);
+        values[1] = Utils.valueString(x, values[1]);
         appendTradePrice(1, XAsk.price, "AUD");
 
         double y = x / XYAsk.price;
-        values[2] = valueString(y, values[2]);
+        values[2] = Utils.valueString(y, values[2]);
         appendTradePrice(2, XYAsk.price, Y);
 
         double aud = y * YBid.price;
-        values[3] = valueString(aud, values[3]);
+        values[3] = Utils.valueString(aud, values[3]);
         appendTradePrice(3, YBid.price, "AUD");
 
-        double profit = aud - capital;
-        values[4] = valueString(profit, values[4]);
+        profit = aud - capital;
+        values[4] = Utils.valueString(profit, values[4]);
     }
 
     private void recordProfitY(Order YAsk, Order XYBid, Order XBid) {
         double capital = calculateCapitalY(YAsk, XYBid, XBid);
-        values[0] = valueString(capital, values[0]);
+        values[0] = Utils.valueString(capital, values[0]);
 
         double y = capital / YAsk.price;
-        values[1] = valueString(y, values[1]);
+        values[1] = Utils.valueString(y, values[1]);
         appendTradePrice(1, YAsk.price, "AUD");
 
         double x = y * XYBid.price;
-        values[2] = valueString(x, values[2]);
+        values[2] = Utils.valueString(x, values[2]);
         appendTradePrice(2, XYBid.price, Y);
 
         double aud = x * XBid.price;
-        values[3] = valueString(aud, values[3]);
+        values[3] = Utils.valueString(aud, values[3]);
         appendTradePrice(3, XBid.price, "AUD");
 
-        double profit = aud - capital;
-        values[4] = valueString(profit, values[4]);
+        profit = aud - capital;
+        values[4] = Utils.valueString(profit, values[4]);
     }
 
     private double calculateCapitalX(Order XAsk, Order XYAsk, Order YBid){
@@ -99,10 +100,6 @@ public class Strategy {
         return maxYSold * YAsk.price;
     }
 
-    private static String valueString(double value, String currency){
-        return String.format("%,.2f", value) + currency;
-    }
-
     private void appendTradePrice(int strIndex, double price, String currency){
         labels[strIndex] = labels[strIndex] + " @" + String.format("%,.2f", price) + currency;
     }
@@ -121,6 +118,7 @@ public class Strategy {
     }
 
     public void setProfitability(boolean profitability){
+        profit = (double) 0;
         profitable = profitability;
     }
 
@@ -128,12 +126,7 @@ public class Strategy {
         return profitable;
     }
 
-    public String getProfit(){
-        if (profitable){
-            return values[4];
-        }
-        else {
-            return "0 AUD";
-        }
+    public Double getProfit(){
+        return profit;
     }
 }
