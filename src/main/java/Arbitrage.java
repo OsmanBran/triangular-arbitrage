@@ -8,6 +8,7 @@ public class Arbitrage {
     BidAsk xBidAsk;
     BidAsk yBidAsk;
     BidAsk xyBidAsk;
+    BidAsk crossRate;
 
     Strategy strategy = new Strategy();
 
@@ -43,7 +44,7 @@ public class Arbitrage {
         yBidAsk = marketY.getBidAsk();
         xyBidAsk = marketXY.getBidAsk();
 
-        BidAsk crossRate = getCrossRate(xBidAsk, yBidAsk);
+        crossRate = calculateCrossRate(xBidAsk, yBidAsk);
 
         // Compare cross rate with current XY rates
         // If market spread lower than cross rate spread, X is overvalued, buy X
@@ -61,13 +62,21 @@ public class Arbitrage {
         return strategy;
     }
 
+    public BidAsk getCrossSpread(){
+        return crossRate;
+    }
+
+    public BidAsk getMarketSpread(){
+        return xyBidAsk;
+    }
+
     /**
      * Returns the cross rate of two quotes
      * @param x e.g BTC/AUD
      * @param y e.g ETH/AUD
      * @return cross rate for BTC/ETH
      */
-    private static BidAsk getCrossRate (BidAsk x, BidAsk y) {
+    private static BidAsk calculateCrossRate (BidAsk x, BidAsk y) {
         double bidPrice = (1 / x.ask.price) / (1 / y.bid.price);
         double askPrice = (1 / x.bid.price) / (1 / y.bid.price);
         Order bid = new Order(bidPrice, 0);
