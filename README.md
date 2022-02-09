@@ -12,3 +12,12 @@ It also allows for a user to "poll" which involves automatically checking for ar
 
 Using the app reveals that there is virtually no arbitrage available and the markets are running efficiently.
 
+# Building
+
+This app was built using Maven.
+
+Test cases can be run using `mvn test`
+
+The JAR file can be created with `mvn package`
+
+Then run `BtcArbitrage-1.0-SNAPSHOT-jar-with-dependencies.jar` to start the application
