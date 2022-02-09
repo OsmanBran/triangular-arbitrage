@@ -2,7 +2,7 @@ public class BidAsk {
     Order bid;
     Order ask;
 
-    public BidAsk (Order bid, Order ask) {
+    public BidAsk(Order bid, Order ask) {
         this.bid = bid;
         this.ask = ask;
     }

@@ -2,13 +2,13 @@ import static java.lang.Math.min;
 
 public class Strategy {
     private String[] values = {"AUD", "", "", "AUD", "AUD"};
-    private String[] labels = {"Initial Capital","","","","Profit"};
+    private String[] labels = {"Initial Capital", "", "", "", "Profit"};
     private String X;
     private String Y;
     private boolean profitable = false;
     private Double profit;
 
-    private void addLabelX(){
+    private void addLabelX() {
         values[1] = X;
         values[2] = Y;
         labels[1] = "buy " + X;
@@ -16,7 +16,7 @@ public class Strategy {
         labels[3] = "sell " + Y;
     }
 
-    private void addLabelY(){
+    private void addLabelY() {
         values[1] = Y;
         values[2] = X;
         labels[1] = "buy " + Y;
@@ -24,16 +24,15 @@ public class Strategy {
         labels[3] = "sell " + X;
     }
 
-    public void update(boolean xOvervalued, Order trade1, Order trade2, Order trade3){
+    public void update(boolean xOvervalued, Order trade1, Order trade2, Order trade3) {
         profitable = true;
         values = new String[]{"AUD", "", "", "AUD", "AUD"};
         labels = new String[]{"Initial Capital", "", "", "", "Profit"};
 
-        if (xOvervalued){
+        if (xOvervalued) {
             addLabelX();
             recordProfitX(trade1, trade2, trade3);
-        }
-        else {
+        } else {
             addLabelY();
             recordProfitY(trade1, trade2, trade3);
         }
@@ -79,7 +78,7 @@ public class Strategy {
         values[4] = Utils.valueString(profit, values[4]);
     }
 
-    private double calculateCapitalX(Order XAsk, Order XYAsk, Order YBid){
+    private double calculateCapitalX(Order XAsk, Order XYAsk, Order YBid) {
         // Find max amount of Y sold
         double maxYSold = min(YBid.volume, XYAsk.volume);
 
@@ -90,7 +89,7 @@ public class Strategy {
     }
 
 
-    private double calculateCapitalY(Order YAsk, Order XYBid, Order XBid){
+    private double calculateCapitalY(Order YAsk, Order XYBid, Order XBid) {
         // Find max amount of X Sold
         double maxXSold = min(XBid.volume, XYBid.volume * XYBid.price);
 
@@ -100,11 +99,11 @@ public class Strategy {
         return maxYSold * YAsk.price;
     }
 
-    private void appendTradePrice(int strIndex, double price, String currency){
+    private void appendTradePrice(int strIndex, double price, String currency) {
         labels[strIndex] = labels[strIndex] + " @" + String.format("%,.2f", price) + currency;
     }
 
-    public void setMarketStrings(String X, String Y){
+    public void setMarketStrings(String X, String Y) {
         this.X = X;
         this.Y = Y;
     }
@@ -117,16 +116,16 @@ public class Strategy {
         return values;
     }
 
-    public void setProfitability(boolean profitability){
+    public void setProfitability(boolean profitability) {
         profit = (double) 0;
         profitable = profitability;
     }
 
-    public boolean isProfitable(){
+    public boolean isProfitable() {
         return profitable;
     }
 
-    public Double getProfit(){
+    public Double getProfit() {
         return profit;
     }
 }

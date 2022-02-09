@@ -3,16 +3,16 @@ public class Poll {
     private int profitablePolls = 0;
     private double totalProfit = 0;
 
-    public void clearPoll(){
+    public void clearPoll() {
         totalPolls = 0;
         profitablePolls = 0;
         totalProfit = 0;
     }
 
-    public void updatePoll(Strategy result){
+    public void updatePoll(Strategy result) {
         totalPolls++;
 
-        if (result.isProfitable()){
+        if (result.isProfitable()) {
             profitablePolls++;
             totalProfit += result.getProfit();
         }

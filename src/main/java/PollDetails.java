@@ -4,14 +4,14 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 
 public class PollDetails extends JPanel {
-    private JLabel lastPollDetails;
-    private JLabel pollDetails;
+    private final JLabel lastPollDetails;
+    private final JLabel pollDetails;
 
-    public PollDetails(){
+    public PollDetails() {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
         Border etched = BorderFactory.createEtchedBorder(EtchedBorder.RAISED);
-        Border space = new EmptyBorder(10,10,10,10);
+        Border space = new EmptyBorder(10, 10, 10, 10);
         Border compound = BorderFactory.createCompoundBorder(etched, space);
         compound = BorderFactory.createCompoundBorder(space, compound);
 
@@ -29,12 +29,12 @@ public class PollDetails extends JPanel {
         this.add(pollDetails);
     }
 
-    public void updateDetails(BidAsk cross, BidAsk market, Strategy result, Poll poll){
+    public void updateDetails(BidAsk cross, BidAsk market, Strategy result, Poll poll) {
         updateLastTrade(cross, market, result);
         updatePollDetails(poll);
     }
 
-    private void updateLastTrade(BidAsk cross, BidAsk market, Strategy result){
+    private void updateLastTrade(BidAsk cross, BidAsk market, Strategy result) {
         lastPollDetails.setText(
                 "<html>Last market spread: " + Utils.spreadString(market) + "<br/>"
                         + "Last cross spread: " + Utils.spreadString(cross) + "<br/>"
@@ -42,7 +42,7 @@ public class PollDetails extends JPanel {
         );
     }
 
-    private void updatePollDetails(Poll poll){
+    private void updatePollDetails(Poll poll) {
         pollDetails.setText(
                 "<html>Total polls: " + poll.getTotalPolls() + "<br/>"
                         + "Profitable polls: " + poll.getProfitablePolls() + "<br/>"

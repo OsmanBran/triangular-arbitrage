@@ -8,22 +8,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Market {
-    private String orderbookURL;
-    private String ticker;
-    private String base;
+    private final String orderbookURL;
+    private final String ticker;
+    private final String base;
 
-    public Market (String ticker) {
+    public Market(String ticker) {
         orderbookURL = "https://api.btcmarkets.net/v3/markets/" + ticker + "/orderbook";
         this.ticker = ticker;
         this.base = ticker.substring(0, 3);
     }
 
-    public BidAsk getBidAsk () throws Exception {
+    public BidAsk getBidAsk() throws Exception {
         String orderBookString = requestOrderBook();
         return parseAsBidAsk(orderBookString);
     }
 
-    private String requestOrderBook () throws Exception {
+    private String requestOrderBook() throws Exception {
         CloseableHttpClient httpClient = HttpClients.createDefault();
         HttpGet httpGet = new HttpGet(orderbookURL);
         CloseableHttpResponse httpResponse = null;
@@ -40,7 +40,7 @@ public class Market {
 
             String content = EntityUtils.toString(entity);
             return content;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("unable to execute json call:" + e);
         } finally {
             // close http connection
@@ -56,11 +56,11 @@ public class Market {
         }
     }
 
-    private BidAsk parseAsBidAsk (String orderBook) throws Exception {
+    private BidAsk parseAsBidAsk(String orderBook) throws Exception {
         JSONObject orderBookObj = new JSONObject(orderBook);
         JSONArray asks = orderBookObj.getJSONArray("asks");
         JSONArray bids = orderBookObj.getJSONArray("bids");
-        if (asks.length() == 0 || bids.length() == 0){
+        if (asks.length() == 0 || bids.length() == 0) {
             throw new Exception("No asks or bids");
         }
         Order topAsk = parseAsOrder(asks.getJSONArray(0));
@@ -69,21 +69,18 @@ public class Market {
         return new BidAsk(topBid, topAsk);
     }
 
-    /**
-     * Parses an order in JSON format to an order object
-     * @param orderArr
-     * @return
-     */
-    private Order parseAsOrder (JSONArray orderArr) {
+    private Order parseAsOrder(JSONArray orderArr) {
         double price = orderArr.getDouble(0);
         double volume = orderArr.getDouble(1);
 
         return new Order(price, volume);
     }
 
-    public String getTicker(){
+    public String getTicker() {
         return ticker;
     }
 
-    public String getBase() { return base; }
+    public String getBase() {
+        return base;
+    }
 }

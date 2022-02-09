@@ -1,24 +1,34 @@
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Main GUI view which also holds the main method.
+ * <p>
+ * Supports finding triangular arbitrage between AUD and the following currency pairs:
+ * BTC-ETC, BTC-LTC, BTC-XRP
+ */
 public class MainView {
-    private JFrame frame;
-    private MarketTable marketTable;
-    private StrategyTable strategyTable;
-    private SettingsPanel settingsPanel;
-    private ResultsPanel resultsPanel;
+    private final JFrame frame;
+    private final MarketTable marketTable;
+    private final StrategyTable strategyTable;
+    private final SettingsPanel settingsPanel;
+    private final ResultsPanel resultsPanel;
 
-    private Arbitrage arb;
+    private final Arbitrage arb;
+    private final Poll poll = new Poll();
+    private final String[] marketStrings;
     private boolean isPolling = false;
-    private Poll poll = new Poll();
 
     public MainView() {
+        // Specify default market
         arb = new Arbitrage("BTC-ETH");
+
+        // Add supported markets here
+        marketStrings = new String[]{"BTC-ETH", "BTC-LTC", "BTC-XRP"};
 
         // Initialise frame
         frame = new JFrame();
@@ -48,11 +58,15 @@ public class MainView {
         frame.setVisible(true);
     }
 
+    public static void main(String[] args) throws Exception {
+        new MainView();
+    }
+
     public class SettingsPanel extends JPanel {
-        private CardLayout cardModel;
+        private final CardLayout cardModel;
         JComboBox marketDropdown;
 
-        SettingsPanel(){
+        SettingsPanel() {
             cardModel = new CardLayout();
             this.setLayout(cardModel);
 
@@ -63,11 +77,10 @@ public class MainView {
             this.add(pollPanel);
         }
 
-        private JPanel initDefaultView(){
+        private JPanel initDefaultView() {
             JPanel panel = new JPanel();
 
-            panel.setLayout(new GridLayout(1,0));
-            String[] marketStrings = {"BTC-ETH", "BTC-LTC", "BTC-XRP"};
+            panel.setLayout(new GridLayout(1, 0));
             marketDropdown = new JComboBox(marketStrings);
             marketDropdown.addActionListener(new getMarketListener());
             panel.add(marketDropdown);
@@ -85,7 +98,7 @@ public class MainView {
             return panel;
         }
 
-        private JPanel initPollView(){
+        private JPanel initPollView() {
             JPanel panel = new JPanel();
             panel.setLayout(new BorderLayout());
 
@@ -96,15 +109,15 @@ public class MainView {
             return panel;
         }
 
-        public void togglePoll(){
+        public void togglePoll() {
             cardModel.previous(this);
         }
     }
 
     public class ResultsPanel extends JPanel {
-        private CardLayout cardModel;
-        private FailMessage failMessage;
-        private PollDetails pollDetails;
+        private final CardLayout cardModel;
+        private final FailMessage failMessage;
+        private final PollDetails pollDetails;
 
         public ResultsPanel() {
             this.setPreferredSize(new Dimension(200, 300));
@@ -115,7 +128,7 @@ public class MainView {
             this.add(defaultText, "default");
 
             failMessage = new FailMessage();
-            this.setAlignmentX(failMessage.CENTER_ALIGNMENT);
+            this.setAlignmentX(CENTER_ALIGNMENT);
             this.add(failMessage, "fail");
 
             StrategyTable checkSuccessTable = strategyTable;
@@ -127,20 +140,19 @@ public class MainView {
             cardModel.show(this, "default");
         }
 
-        public void displayCheckResults(Strategy result){
-            if (result.isProfitable()){
+        public void displayCheckResults(Strategy result) {
+            if (result.isProfitable()) {
                 strategyTable.setData(result);
-                cardModel.show(this,"success");
-            }
-            else {
+                cardModel.show(this, "success");
+            } else {
                 failMessage.setMessage(arb.getCrossSpread(), arb.getMarketSpread());
-                cardModel.show(this,"fail");
+                cardModel.show(this, "fail");
             }
         }
 
         public void displayPollResults(Strategy result) {
             pollDetails.updateDetails(arb.getCrossSpread(), arb.getMarketSpread(), result, poll);
-            cardModel.show(this,"poll");
+            cardModel.show(this, "poll");
         }
     }
 
@@ -160,8 +172,7 @@ public class MainView {
                 resultsPanel.displayCheckResults(result);
 
                 marketTable.setData(arb.getMarketData());
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, ex.getMessage(),
                         "Message", JOptionPane.ERROR_MESSAGE);
             }
@@ -178,8 +189,7 @@ public class MainView {
                 // begin polling every 10 seconds until poll stopped (use new thread?)
                 Thread pollThread = new Thread(new pollArbitrage());
                 pollThread.start();
-            }
-            catch (Exception ex) {
+            } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, ex.getMessage(),
                         "Message", JOptionPane.ERROR_MESSAGE);
             }
@@ -198,11 +208,11 @@ public class MainView {
     }
 
     public class pollArbitrage implements Runnable {
-        public void run(){
+        public void run() {
             isPolling = true;
             poll.clearPoll();
 
-            while(isPolling){
+            while (isPolling) {
                 Strategy result = null;
                 try {
                     result = arb.checkArbitrage();
@@ -212,16 +222,11 @@ public class MainView {
 
                     marketTable.setData(arb.getMarketData());
                     TimeUnit.SECONDS.sleep(10);
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     JOptionPane.showMessageDialog(frame, ex.getMessage(),
                             "Message", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        new MainView();
     }
 }

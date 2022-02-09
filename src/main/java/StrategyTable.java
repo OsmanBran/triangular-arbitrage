@@ -3,9 +3,9 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class StrategyTable extends JPanel {
-    private JTable table;
-    private String[] columnNames = {"Description", "Value"};
-    private Object[][] data = {
+    private final JTable table;
+    private final String[] columnNames = {"Description", "Value"};
+    private final Object[][] data = {
             {"N/A", "-"},
             {"N/A", "-"},
             {"N/A", "-"},
@@ -13,7 +13,7 @@ public class StrategyTable extends JPanel {
             {"N/A", "-"},
     };
 
-    public StrategyTable(){
+    public StrategyTable() {
         table = new JTable(data, columnNames);
         table.setRowHeight(30);
 
@@ -22,11 +22,11 @@ public class StrategyTable extends JPanel {
         this.add(table, BorderLayout.CENTER);
     }
 
-    public void setData(Strategy strategyData){
+    public void setData(Strategy strategyData) {
         Object[] labels = strategyData.getLabels();
         Object[] values = strategyData.getValues();
         Object[][] tableData = new Object[5][2];
-        for (int row = 0; row < 5; row++){
+        for (int row = 0; row < 5; row++) {
             tableData[row][0] = labels[row];
             tableData[row][1] = values[row];
         }
