@@ -12,6 +12,10 @@ public class Arbitrage {
 
     Strategy strategy = new Strategy();
 
+    public Arbitrage(String defaultMarket){
+        setMarkets(defaultMarket);
+    }
+
     public void setMarkets(String selectedMarket){
         // string in format X-Y
         String[] markets = selectedMarket.split("-");

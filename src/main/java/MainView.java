@@ -13,11 +13,13 @@ public class MainView {
     private SettingsPanel settingsPanel;
     private ResultsPanel resultsPanel;
 
-    private Arbitrage arb = new Arbitrage();
+    private Arbitrage arb;
     private boolean isPolling = false;
     private Poll poll = new Poll();
 
     public MainView() {
+        arb = new Arbitrage("BTC-ETH");
+
         // Initialise frame
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -67,6 +69,7 @@ public class MainView {
             panel.setLayout(new GridLayout(1,0));
             String[] marketStrings = {"BTC-ETH", "BTC-LTC", "BTC-XRP"};
             marketDropdown = new JComboBox(marketStrings);
+            marketDropdown.addActionListener(new getMarketListener());
             panel.add(marketDropdown);
 
             JButton checkButton = new JButton("Check arbitrage");
@@ -141,12 +144,18 @@ public class MainView {
         }
     }
 
+    public class getMarketListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
+        }
+    }
+
     public class checkArbitrageListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
             try {
-                arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
                 Strategy result = arb.checkArbitrage();
                 resultsPanel.displayCheckResults(result);
 
@@ -196,7 +205,6 @@ public class MainView {
             while(isPolling){
                 Strategy result = null;
                 try {
-                    arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
                     result = arb.checkArbitrage();
                     poll.updatePoll(result);
 
