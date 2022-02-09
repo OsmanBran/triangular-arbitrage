@@ -57,7 +57,6 @@ public class Arbitrage {
         }
         else {
             strategy.setProfitability(false);
-            strategy.setFailMessage(crossRate);
         }
         return strategy;
     }

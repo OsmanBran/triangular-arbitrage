@@ -6,7 +6,6 @@ public class Strategy {
     private String X;
     private String Y;
     private boolean profitable;
-    private String failMessage;
 
     private void addLabelX(){
         values[1] = X;
@@ -129,11 +128,12 @@ public class Strategy {
         return profitable;
     }
 
-    public void setFailMessage(BidAsk crossRate){
-        failMessage = "No arbitrage available \n" + "cross rate spread is: " + String.format("%,.5f", crossRate.bid.price) + " - " + String.format("%,.5f", crossRate.ask.price);
-    }
-
-    public String getFailMessage(){
-        return failMessage;
+    public String getProfit(){
+        if (profitable){
+            return values[4];
+        }
+        else {
+            return "0 AUD";
+        }
     }
 }

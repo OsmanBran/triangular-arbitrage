@@ -4,6 +4,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.concurrent.TimeUnit;
 
 public class MainView {
     private JFrame frame;
@@ -56,7 +57,7 @@ public class MainView {
             this.add(checkButton);
 
             JButton pollButton = new JButton("Poll arbitrage");
-            // pollButton.addActionListener();
+            pollButton.addActionListener(new pollArbitrageListener());
             this.add(pollButton);
 
             this.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -66,6 +67,7 @@ public class MainView {
     public class ResultsPanel extends JPanel {
         private CardLayout cardModel;
         private FailMessage failMessage;
+        private PollDetails pollDetails;
 
         public ResultsPanel() {
             // Set this to fail message initially
@@ -83,7 +85,7 @@ public class MainView {
             StrategyTable checkSuccessTable = strategyTable;
             this.add(checkSuccessTable, "success");
 
-            JPanel pollDetails = new JPanel();
+            pollDetails = new PollDetails();
             this.add(pollDetails, "poll");
 
             cardModel.show(this, "default");
@@ -100,7 +102,8 @@ public class MainView {
             }
         }
 
-        public void displayPollResults() {
+        public void displayPollResults(Strategy result) {
+            pollDetails.updatePoll(arb.getCrossSpread(), arb.getMarketSpread(), result);
             cardModel.show(this,"poll");
         }
     }
@@ -132,15 +135,39 @@ public class MainView {
 
                 // update GUI to only show stop poll
 
-                // update GUI to show current statistics
-
-                // begin polling every 10 seconds (use new thread?)
+                // begin polling every 10 seconds until poll stopped (use new thread?)
+                Thread pollThread = new Thread(new pollArbitrage());
+                pollThread.start();
             }
             catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, ex.getMessage(),
                         "Message", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+
+    public class pollArbitrage implements Runnable {
+        public void run(){
+            while(true){
+                Strategy result = null;
+                try {
+                    arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
+                    result = arb.checkArbitrage();
+                    resultsPanel.displayPollResults(result);
+
+                    marketTable.setData(arb.getMarketData());
+                    TimeUnit.SECONDS.sleep(10);
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(frame, ex.getMessage(),
+                            "Message", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
+    public static String spreadString(BidAsk spread){
+        return String.format("%,.5f", spread.bid.price) + " - " + String.format("%,.5f", spread.ask.price);
     }
 
     public static void main(String[] args) throws Exception {
