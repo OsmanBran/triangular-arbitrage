@@ -12,7 +12,9 @@ public class MainView {
     private StrategyTable strategyTable;
     private SettingsPanel settingsPanel;
     private ResultsPanel resultsPanel;
-    Arbitrage arb = new Arbitrage();
+
+    private Arbitrage arb = new Arbitrage();
+    private boolean isPolling = false;
 
     public MainView() {
         // Initialise frame
@@ -44,23 +46,54 @@ public class MainView {
     }
 
     public class SettingsPanel extends JPanel {
+        private CardLayout cardModel;
         JComboBox marketDropdown;
 
         SettingsPanel(){
-            this.setLayout(new GridLayout(1,0));
+            cardModel = new CardLayout();
+            this.setLayout(cardModel);
+
+            JPanel defaultPanel = initDefaultView();
+            this.add(defaultPanel);
+
+            JPanel pollPanel = initPollView();
+            this.add(pollPanel);
+        }
+
+        private JPanel initDefaultView(){
+            JPanel panel = new JPanel();
+
+            panel.setLayout(new GridLayout(1,0));
             String[] marketStrings = {"BTC-ETH", "BTC-LTC", "BTC-XRP"};
             marketDropdown = new JComboBox(marketStrings);
-            this.add(marketDropdown);
+            panel.add(marketDropdown);
 
             JButton checkButton = new JButton("Check arbitrage");
             checkButton.addActionListener(new checkArbitrageListener());
-            this.add(checkButton);
+            panel.add(checkButton);
 
             JButton pollButton = new JButton("Poll arbitrage");
             pollButton.addActionListener(new pollArbitrageListener());
-            this.add(pollButton);
+            panel.add(pollButton);
 
-            this.setBorder(new EmptyBorder(10, 10, 10, 10));
+            panel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+            return panel;
+        }
+
+        private JPanel initPollView(){
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout());
+
+            JButton stopPoll = new JButton("Stop polling");
+            stopPoll.addActionListener(new stopPollListener());
+            panel.add(stopPoll, BorderLayout.CENTER);
+
+            return panel;
+        }
+
+        public void togglePoll(){
+            cardModel.previous(this);
         }
     }
 
@@ -70,7 +103,6 @@ public class MainView {
         private PollDetails pollDetails;
 
         public ResultsPanel() {
-            // Set this to fail message initially
             this.setPreferredSize(new Dimension(200, 300));
             cardModel = new CardLayout();
             this.setLayout(cardModel);
@@ -136,6 +168,8 @@ public class MainView {
                 // update GUI to only show stop poll
 
                 // begin polling every 10 seconds until poll stopped (use new thread?)
+                isPolling = true;
+                settingsPanel.togglePoll();
                 Thread pollThread = new Thread(new pollArbitrage());
                 pollThread.start();
             }
@@ -146,9 +180,20 @@ public class MainView {
         }
     }
 
+    public class stopPollListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // stop the thread
+            isPolling = false;
+
+            // change setting display
+            settingsPanel.togglePoll();
+        }
+    }
+
     public class pollArbitrage implements Runnable {
         public void run(){
-            while(true){
+            while(isPolling){
                 Strategy result = null;
                 try {
                     arb.setMarkets((String) settingsPanel.marketDropdown.getSelectedItem());
